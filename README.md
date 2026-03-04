@@ -231,6 +231,176 @@ This implementation demonstrates the core architecture used in modern LLMs like 
 
 ---
 
+### 3. Direct Preference Optimization (DPO) Fine-Tuning
+**File:** `DPO_Fine_Tuning_Llama.ipynb`
+
+This project implements Direct Preference Optimization (DPO) to fine-tune Llama-3.2 3B model using preference datasets. It demonstrates advanced alignment techniques used in modern LLMs to make them more helpful and aligned with human preferences.
+
+#### Concepts Covered
+
+**Part 1: Preference Dataset Generation (40 points)**
+
+**1. LLM-as-a-Judge System**
+- Implementing an LLM-based evaluation system
+- Designing judge prompts for consistent preference judgments
+- Using Groq API for automated response evaluation
+- Ensuring reliability and consistency in preference collection
+- Creating preference pairs from judge evaluations
+
+**2. PairRM-Based Preference Collection**
+- **PairRM**: Reward model trained specifically for ranking responses
+- Extracting instructions from LIMA dataset (50 instructions)
+- Generating 5 responses per instruction using Llama-3.2
+- Automatic preference ranking using PairRM
+- Creating high-quality preference datasets
+
+**3. Dataset Management**
+- Uploading datasets to HuggingFace Hub
+- Dataset versioning and documentation
+- Preference pair formatting for DPO training
+- Quality control and validation
+
+**Part 2: DPO Fine-Tuning and Analysis (60 points)**
+
+**4. Direct Preference Optimization (DPO)**
+- **What is DPO**: Training method that directly optimizes for human preferences
+- **How it works**: Uses preference pairs (chosen vs. rejected responses)
+- **Advantage over RLHF**: Simpler, more stable, no separate reward model needed
+- **Training objective**: Maximize probability of preferred responses
+- Understanding the DPO loss function
+
+**5. Fine-Tuning Llama-3.2 3B**
+- **Model**: Meta's Llama-3.2 3B chat model
+- **PEFT (Parameter-Efficient Fine-Tuning)**: Using LoRA adapters
+- **Two training runs**:
+  - Model 1: Trained on PairRM preferences
+  - Model 2: Trained on Groq judge preferences
+- Comparing different preference collection methods
+
+**6. LoRA (Low-Rank Adaptation)**
+- **What is LoRA**: Efficient fine-tuning by adding small trainable matrices
+- Freezing base model weights
+- Training only low-rank decomposition matrices
+- Dramatically reducing trainable parameters
+- Maintaining model quality with minimal parameters
+
+**7. Training Configuration**
+- Learning rate scheduling
+- Gradient accumulation
+- Mixed precision training (FP16/BF16)
+- Training stability monitoring
+- Loss convergence analysis
+
+**8. Comparative Model Evaluation**
+- **Baseline**: Original Llama-3.2 3B
+- **Model 1**: DPO with PairRM preferences
+- **Model 2**: DPO with Groq judge preferences
+- Testing on 10 novel instructions
+- Qualitative and quantitative analysis
+
+**9. Response Quality Metrics**
+- **Structure and organization**: Use of formatting, lists, headers
+- **Conciseness vs. completeness**: Balance of detail
+- **Instruction following**: Semantic alignment with prompt
+- **Safety and helpfulness**: Appropriate hedging and actionable advice
+- **Length optimization**: Character count analysis
+
+#### Project Structure
+
+**Part 1: Dataset Generation**
+- Loading LIMA dataset (high-quality instruction-response pairs)
+- Generating multiple responses per instruction
+- LLM Judge implementation with Groq
+- PairRM-based preference ranking
+- Dataset upload to HuggingFace
+
+**Part 2: Model Training**
+- DPO training setup and configuration
+- Training with PairRM dataset
+- Training with Groq judge dataset
+- Model upload to HuggingFace Hub
+
+**Part 3: Evaluation**
+- Novel instruction selection
+- Response generation from 3 models
+- Comprehensive quality analysis
+- Behavioral pattern identification
+
+#### Key Learning Outcomes
+
+1. **Preference Learning**: Understanding how models learn from human preferences
+2. **DPO vs. RLHF**: Comparing alignment training methods
+3. **LLM Evaluation**: Using LLMs to judge other LLMs
+4. **Efficient Fine-Tuning**: Implementing LoRA for large model adaptation
+5. **Response Quality**: Measuring and comparing LLM outputs
+6. **Dataset Creation**: Building high-quality preference datasets
+7. **Model Alignment**: Techniques for making LLMs more helpful and safe
+
+#### Results and Findings
+
+**Training Stability:**
+- Both models achieved stable convergence
+- No loss oscillation observed
+- Consistent preference pattern application
+
+**PairRM Model Behaviors:**
+- 23% increase in structured formatting elements
+- Length optimization toward 300-600 character range
+- Enhanced organization with lists and headers
+- Improved conciseness without sacrificing completeness
+
+**Groq Judge Model Behaviors:**
+- 31% increase in actionable advice phrases
+- Enhanced safety hedging with uncertainty markers
+- Improved instruction-response alignment
+- More helpful directive language
+
+**Key Observations:**
+- Different preference sources lead to different model behaviors
+- PairRM optimizes for structure and conciseness
+- LLM judge preferences enhance helpfulness and safety
+- Both methods significantly improve over base model
+
+#### HuggingFace Resources
+
+**Datasets:**
+- PairRM Preferences: `Nikichoksi/lima-pairrm-preferences`
+- Groq Judge Preferences: `Nikichoksi/lima-groq-preferences`
+
+**Models:**
+- PairRM DPO Model: `Nikichoksi/llama-3.2-3b-dpo-pairrm`
+- Groq DPO Model: `Nikichoksi/llama-3.2-3b-dpo-groq`
+
+#### Technical Skills Demonstrated
+
+- Direct Preference Optimization implementation
+- LLM-as-a-Judge system design
+- PairRM integration for preference ranking
+- LoRA adapter fine-tuning
+- PEFT (Parameter-Efficient Fine-Tuning)
+- HuggingFace Transformers library
+- Dataset creation and management
+- Model evaluation and comparison
+- Response quality analysis
+- GPU-accelerated training
+
+#### Connection to Modern LLM Training
+
+This project demonstrates techniques used in training state-of-the-art models:
+- **ChatGPT/GPT-4**: Uses RLHF (similar to DPO) for alignment
+- **Claude**: Trained with Constitutional AI and preference learning
+- **Llama-2/3**: Uses RLHF for instruction following
+- **DPO**: Newer, simpler alternative to RLHF gaining adoption
+- All modern chatbots use some form of preference learning
+
+**Training Pipeline:**
+1. Pre-training (not covered here)
+2. Supervised Fine-Tuning (SFT) - not covered here
+3. **Preference Learning (DPO/RLHF)** ← This project
+4. Optional: Safety fine-tuning
+
+---
+
 ## Technologies Used
 
 - Python 3.x
