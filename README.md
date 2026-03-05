@@ -231,7 +231,165 @@ This implementation demonstrates the core architecture used in modern LLMs like 
 
 ---
 
-### 3. Direct Preference Optimization (DPO) Fine-Tuning
+### 3. Self-Alignment with Instruction Backtranslation
+**File:** `Self_Alignment_Instruction_Backtranslation.ipynb`
+
+This project implements a novel approach to creating instruction-following models without human-annotated instruction data. Using the technique from the "Self-Alignment with Instruction Backtranslation" paper, it demonstrates how to bootstrap high-quality instruction datasets from seed data.
+
+#### Concepts Covered
+
+**The Self-Alignment Pipeline**
+
+**Step 1: Train Backward Model**
+- **Backward Model Concept**: A model that predicts instructions from outputs (p(x|y))
+- **Training Direction**: Reverse of normal (instruction → output)
+- **Dataset**: OpenAssistant-Guanaco training set
+- **Model**: LLaMA 2 7B fine-tuned with LoRA
+- **Purpose**: Generate plausible instructions for given outputs
+
+**Step 2: Self-Augmentation**
+- **Instruction Generation**: Using backward model on LIMA dataset completions
+- **Sample Size**: 150 examples from LIMA
+- **Filtering**: Removing multi-turn conversations
+- **Process**: Generate instructions from high-quality responses
+- **Output**: Synthetic instruction-response pairs
+
+**Step 3: Self-Curation**
+- **Quality Assessment**: Using LLM to rate generated instruction-response pairs
+- **Few-Shot Prompting**: Providing examples of high/low quality pairs
+- **Scoring System**: Evaluating coherence, relevance, and usefulness
+- **Filtering**: Keeping only high-quality examples
+- **Dataset Creation**: Curated instruction dataset for fine-tuning
+
+**Step 4: Fine-Tune Base Model**
+- **Model**: LLaMA 2 7B base
+- **Dataset**: Self-curated instruction dataset from Step 3
+- **Method**: LoRA (Low-Rank Adaptation)
+- **Result**: Instruction-following model without human annotations
+- **Validation**: Testing with example responses
+
+#### Key Techniques
+
+**1. Instruction Backtranslation**
+- **Novel Approach**: Generate instructions from outputs instead of outputs from instructions
+- **Advantage**: Leverage high-quality outputs without expensive human instruction annotation
+- **Process**: Output → Backward Model → Instruction
+- **Quality**: Maintains output quality while generating diverse instructions
+
+**2. LoRA (Low-Rank Adaptation)**
+- **Efficient Fine-Tuning**: Only train small adapter matrices
+- **Parameter Reduction**: Train <1% of model parameters
+- **Memory Efficiency**: Enables training 7B models on consumer hardware
+- **Quality Preservation**: Maintains base model capabilities
+
+**3. Self-Curation with LLM-as-a-Judge**
+- **Automated Quality Control**: Using LLM to filter generated data
+- **Few-Shot Learning**: Providing examples of good/bad pairs
+- **Scalability**: No human annotation required
+- **Consistency**: Systematic evaluation criteria
+
+**4. LIMA Dataset Usage**
+- **High-Quality Seed Data**: 1000 carefully curated examples
+- **Minimal Supervision**: Demonstrates less is more
+- **Completions as Gold Standard**: Using LIMA responses as high-quality outputs
+- **Instruction Generation**: Backward model creates matching instructions
+
+#### Project Structure
+
+**Part 1: Backward Model Training**
+- Loading OpenAssistant-Guanaco dataset
+- Configuring LoRA for efficient training
+- Fine-tuning LLaMA 2 7B in reverse direction (output → instruction)
+- Saving and uploading backward model to HuggingFace
+
+**Part 2: Self-Augmentation**
+- Loading LIMA dataset
+- Filtering single-turn examples (150 samples)
+- Generating instructions using backward model
+- Creating synthetic instruction-response pairs
+
+**Part 3: Self-Curation**
+- Loading evaluation model
+- Implementing few-shot prompting for quality assessment
+- Rating generated instruction-response pairs
+- Filtering high-quality examples
+- Creating curated dataset
+
+**Part 4: Instruction Fine-Tuning**
+- Loading LLaMA 2 7B base model
+- Configuring LoRA adapters
+- Training on curated dataset
+- Testing instruction-following capabilities
+- Uploading final model to HuggingFace
+
+#### Key Learning Outcomes
+
+1. **Self-Alignment**: Creating aligned models without human annotation
+2. **Instruction Backtranslation**: Reversing the typical training direction
+3. **Bootstrap Learning**: Using models to improve themselves
+4. **Quality Curation**: Automated filtering with LLM judges
+5. **Efficient Fine-Tuning**: Using LoRA for large model training
+6. **Dataset Generation**: Creating high-quality synthetic data
+7. **Multi-Stage Training**: Complex training pipelines
+
+#### Results and Innovation
+
+**Key Innovation:**
+- **No Human Instructions Required**: Entire pipeline is automated
+- **High-Quality Output**: Leverages LIMA's carefully curated responses
+- **Scalable Approach**: Can generate unlimited instruction data
+- **Cost-Effective**: Avoids expensive human annotation
+
+**Training Pipeline:**
+1. Backward Model: Learns instruction → output mapping in reverse
+2. Augmentation: Generates 150 instruction-response pairs
+3. Curation: Filters to keep only high-quality examples
+4. Final Model: Instruction-tuned LLaMA 2 7B
+
+**Performance:**
+- Successfully generates diverse, relevant instructions
+- High-quality responses on test prompts
+- Demonstrates instruction-following without supervised data
+
+#### HuggingFace Resources
+
+**Models:**
+- Backward Model: `Nikichoksi/llama2-7b-backward-model`
+- Instruction-Tuned Model: `Nikichoksi/llama2-7b-instruction-tuned`
+
+**Dataset:**
+- Curated Instructions: `Nikichoksi/self-aligned-instruction-dataset-assignment`
+
+#### Technical Skills Demonstrated
+
+- Reverse fine-tuning (backward model training)
+- LoRA implementation for 7B parameter models
+- Dataset filtering and preprocessing
+- LLM-based quality evaluation
+- Few-shot prompting techniques
+- Multi-stage training pipelines
+- HuggingFace model and dataset management
+- Synthetic data generation
+- Quality curation at scale
+
+#### Connection to Research and Industry
+
+This technique is based on cutting-edge research and relates to:
+- **Self-Instruct**: Automated instruction generation
+- **Constitutional AI**: Self-improvement through critique
+- **Alpaca**: Instruction-following from demonstrations
+- **Vicuna**: High-quality instruction tuning
+- **Modern LLMs**: Many use synthetic data for training
+
+**Research Impact:**
+- Reduces reliance on human annotation
+- Enables rapid iteration on instruction datasets
+- Democratizes instruction-tuning for researchers
+- Shows that less high-quality data > more low-quality data
+
+---
+
+### 4. Direct Preference Optimization (DPO) Fine-Tuning
 **File:** `DPO_Fine_Tuning_Llama.ipynb`
 
 This project implements Direct Preference Optimization (DPO) to fine-tune Llama-3.2 3B model using preference datasets. It demonstrates advanced alignment techniques used in modern LLMs to make them more helpful and aligned with human preferences.
